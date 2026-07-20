@@ -8,14 +8,14 @@ limitándose solo al blob de bytes.
 
 Sintáxis básica:
 
-# Uso básico — guarda el informe automáticamente
+## Uso básico — guarda el informe automáticamente
 python3 main.py --dump evidence/dumps/memdump.raw
 
-# Con informe en pantalla también
+## Con informe en pantalla también
 python3 main.py --dump evidence/dumps/memdump.raw --verbose
 
-# Solo pantalla, sin guardar fichero
+## Solo pantalla, sin guardar fichero
 python3 main.py --dump evidence/dumps/memdump.raw --no-file
 
-# Especificar nombre del informe
+## Especificar nombre del informe
 python3 main.py --dump evidence/dumps/memdump.raw --output informes/caso_01.txt
