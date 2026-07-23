@@ -1,0 +1,7 @@
+evidence/dumps/
+*.mem
+*.raw
+*.dmp
+__pycache__/
+*.pyc
+.venv/
