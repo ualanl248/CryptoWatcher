@@ -5,3 +5,18 @@ evidence/dumps/
 __pycache__/
 *.pyc
 .venv/
+# Entorno virtual
+.venv/
+
+# Repositorio de Volatility3 clonado localmente
+volatility3/
+
+# Dumps de memoria 
+evidence/dumps/
+
+# Caché de Python
+__pycache__/
+*.pyc
+
+# Informes generados
+cryptowatcher_*.txt

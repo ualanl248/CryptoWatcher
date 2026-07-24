@@ -101,6 +101,11 @@ ejemplos:
         help="Muestra el informe completo en pantalla",
     )
     parser.add_argument(
+        "--symbols", "-s",
+        metavar="DIRECTORIO",
+        help="Directorio con ficheros ISF de Volatility3 para enriquecimiento completo (opcional)",
+    )
+    parser.add_argument(
         "--no-file",
         action="store_true",
         help="No guarda el informe en disco (implica --verbose)",
@@ -122,6 +127,10 @@ def main():
     size_mb = dump_path.stat().st_size / 1024 / 1024
     _info(f"Dump     : {dump_path.resolve()}")
     _info(f"Tamaño   : {size_mb:.2f} MB")
+    if args.symbols:
+        _info(f"Símbolos : {args.symbols}")
+    else:
+        _info("Símbolos : automático (usar --symbols para especificar ruta ISF)")
 
     # ── Hash SHA-256 para cadena de custodia ──────────────────
     _info("Calculando SHA-256 del dump (cadena de custodia)...")
@@ -136,7 +145,7 @@ def main():
 
     try:
         from src.orchestrator import scan_file
-        result = scan_file(str(dump_path))
+        result = scan_file(str(dump_path), symbols_path=args.symbols)
     except Exception as e:
         _error(f"Error durante el escaneo: {e}")
         sys.exit(1)

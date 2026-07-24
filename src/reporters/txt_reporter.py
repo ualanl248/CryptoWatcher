@@ -111,6 +111,8 @@ def _format_hit(hit) -> list[str]:
         lines.append(f"    cifrado    : {'sí (passphrase detectada)' if d.get('encrypted') else 'NO (claves en claro)'}")
         lines.append(f"    nota       : {d.get('severity_note', '')}")
 
+    # Contexto de Volatility (si está disponible)
+    lines.extend(_format_vol_context(hit))
     lines.append("")  # línea en blanco entre hits
     return lines
 
@@ -221,3 +223,29 @@ def generate(result: ScanResult, output_path: str | None = None) -> str:
         return output_path
 
     return report
+
+
+def _format_vol_context(hit) -> list[str]:
+    """
+    Añade sección de contexto de Volatility al hit si está disponible.
+    """
+    ctx = getattr(hit, "vol_context", None)
+    if ctx is None:
+        return []
+
+    lines = ["    -- contexto Volatility --"]
+    lines.append(f"    SO detectado : {ctx.os_banner}")
+    lines.append(f"    Origen       : {ctx.summary()}")
+
+    if ctx.nearby_strings:
+        # Filtramos strings que contengan palabras clave relevantes
+        relevant = [s for s in ctx.nearby_strings
+                    if any(k in s.lower() for k in
+                           ["chrome","bitcoin","wallet","metamask","python",
+                            "brave","firefox","electrum","key","seed","crypto"])]
+        if relevant:
+            lines.append(f"    Strings clave: {relevant[0][:60]}")
+            for s in relevant[1:3]:
+                lines.append(f"                   {s[:60]}")
+
+    return lines

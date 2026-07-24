@@ -23,6 +23,7 @@ from src.detectors.bip39_detector    import scan_buffer as _scan_bip39
 from src.detectors.wif_detector      import scan_buffer as _scan_wif
 from src.detectors.keystore_detector import scan_buffer as _scan_keystore
 from src.detectors.walletdat_detector import scan_buffer as _scan_walletdat
+from src.volatility_plugins.enricher  import enrich_hits
 
 # Rutas de las reglas YARA
 _RULES_DIR = Path(__file__).parent.parent / "rules"
@@ -88,7 +89,7 @@ def _compile_rules() -> yara.Rules:
     return yara.compile(filepaths=RULE_FILES)
 
 
-def scan_buffer(data: bytes, dump_path: str = "<buffer>") -> ScanResult:
+def scan_buffer(data: bytes, dump_path: str = "<buffer>", symbols_path: str | None = None) -> ScanResult:
     """
     Escanea un buffer de bytes con todos los detectores en un único pase.
 
@@ -118,6 +119,11 @@ def scan_buffer(data: bytes, dump_path: str = "<buffer>") -> ScanResult:
             hits = scanner(data)
             all_hits.extend(hits)
 
+    # Enriquecimiento con Volatility (nivel básico, sin perfil ISF)
+    # Funciona siempre — extrae banner del SO y strings cercanos a cada hit
+    if all_hits:
+        enrich_hits(all_hits, dump_path, data, symbols_path=symbols_path)
+
     t_end = time.perf_counter()
 
     return ScanResult(
@@ -128,14 +134,15 @@ def scan_buffer(data: bytes, dump_path: str = "<buffer>") -> ScanResult:
     )
 
 
-def scan_file(path: str) -> ScanResult:
+def scan_file(path: str, symbols_path: str | None = None) -> ScanResult:
     """
     Escanea un fichero completo (dump .raw, .vmem, etc.).
     Punto de entrada principal desde main.py.
+    symbols_path: directorio adicional de ISF de Volatility3 (--symbols).
     """
     p = Path(path)
     if not p.exists():
         raise FileNotFoundError(f"Fichero no encontrado: {path}")
 
     data = p.read_bytes()
-    return scan_buffer(data, dump_path=str(p))
+    return scan_buffer(data, dump_path=str(p), symbols_path=symbols_path)
