@@ -2,8 +2,6 @@
 
 CryptoWatcher es una herramienta de forense de memoria que implementa reglas YARA para la detección de claves privadas (WIF), frases semilla (BIP39), estructuras keystore y archivos wallet.dat en volcados de RAM. Permite identificar y clasificar material criptográfico sensible directamente sobre evidencia sin modificarla, generando un informe forense en texto plano con los hallazgos, su nivel de confianza y recomendaciones de actuación.
 
-Asimismo, incluye una capa de enriquecimiento con Volatility3 que, cuando está disponible el perfil ISF del sistema analizado, contextualiza cada hallazgo con el proceso de memoria de origen (nombre, PID). Sin perfil ISF, la capa degrada graciosamente extrayendo el banner del SO y strings cercanos al offset del artefacto.
-
 ---
 
 ## ¿Qué detecta?
